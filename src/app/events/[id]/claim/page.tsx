@@ -23,6 +23,7 @@ export default function ClaimCertificatePage({ params }: ClaimPageProps) {
   const { getEventById, claimCertificate } = useDataStore();
 
   const [recipientName, setRecipientName] = useState('');
+  const [callSign, setCallSign] = useState('');
   const [claimResult, setClaimResult] = useState<CertificateClaim | null>(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -65,7 +66,7 @@ export default function ClaimCertificatePage({ params }: ClaimPageProps) {
     setError('');
 
     try {
-      const result = await claimCertificate(event.id, recipientName);
+      const result = await claimCertificate(event.id, recipientName, callSign);
       setClaimResult(result);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Gagal mengklaim sertifikat');
@@ -129,6 +130,20 @@ export default function ClaimCertificatePage({ params }: ClaimPageProps) {
                       />
                       <p className="text-xs text-muted-foreground">
                         Pastikan nama sudah benar dan sesuai ejaan yang diinginkan.
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="callSign">Call Sign (Opsional)</Label>
+                      <Input
+                        id="callSign"
+                        value={callSign}
+                        onChange={(e) => setCallSign(e.target.value)}
+                        placeholder="Contoh: YB0ABC"
+                        className="text-lg h-12 uppercase"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Masukkan Call Sign Anda jika ada.
                       </p>
                     </div>
 

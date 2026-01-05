@@ -36,7 +36,7 @@ interface VerifyPageProps {
 
 export default function VerifyPage({ params }: VerifyPageProps) {
   const { letterId } = use(params);
-  const { getLetterById, getSignatureByLetterId, generateQRCode } = useDataStore();
+  const { getLetterById, getSignatureByLetterId, generateQRCode, getUserById } = useDataStore();
 
   // Hydration fix: Handle client-side only rendering for store data
   const [mounted, setMounted] = useState(false);
@@ -49,6 +49,7 @@ export default function VerifyPage({ params }: VerifyPageProps) {
 
   const letter = mounted ? getLetterById(letterId) : undefined;
   const signature = letter ? getSignatureByLetterId(letter.id) : null;
+  const signer = signature && mounted ? getUserById(signature.signerId) : null;
 
   // Verify document integrity
   const isIntegrityValid = letter && letter.contentHash
@@ -315,7 +316,8 @@ export default function VerifyPage({ params }: VerifyPageProps) {
                     <div>
                       <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-2">Ditandatangani Oleh</p>
                       <p className="font-bold text-lg text-slate-800">{signature.signerName}</p>
-                      <p className="text-sm text-slate-500 mt-1">Kepala Dinas Komunikasi dan Informatika</p>
+                      {/* Display Signer Job Title */}
+                      <p className="text-sm text-slate-500 mt-1">{signer?.jobTitle || 'Anggota Resmi AMSAT'}</p>
                     </div>
                     <div>
                       <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-2">Waktu Penandatanganan</p>
@@ -331,7 +333,7 @@ export default function VerifyPage({ params }: VerifyPageProps) {
                     </div>
                     <div className="sm:col-span-2">
                       <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-2">Instansi / Unit Kerja</p>
-                      <p className="font-medium text-slate-800">Pemerintah Kota Example</p>
+                      <p className="font-medium text-slate-800">Organisasi AMSAT</p>
                     </div>
                   </div>
                 </div>

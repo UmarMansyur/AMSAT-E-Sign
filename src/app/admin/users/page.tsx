@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDataStore } from '@/store/data-store';
 import { useAuthStore } from '@/store/auth-store';
 import { AdminLayout } from '@/components/admin/admin-layout';
@@ -61,11 +61,17 @@ import {
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
+import Link from 'next/link';
 import { UserRole, User, ActivityAction } from '@/types';
 
 export default function UsersPage() {
   const { user: currentUser } = useAuthStore();
-  const { getUsers, addUser, updateUser, deleteUser, resetSecretKey, addActivityLog } = useDataStore();
+  const { getUsers, addUser, updateUser, deleteUser, resetSecretKey, addActivityLog, fetchUsers } = useDataStore();
+
+  // Fetch users on mount
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
@@ -81,6 +87,7 @@ export default function UsersPage() {
     email: '',
     role: UserRole.USER,
     isActive: true,
+    jobTitle: '',
   });
 
   const users = getUsers();
@@ -139,7 +146,7 @@ export default function UsersPage() {
       setNewSecretKey(secretKey);
       setIsAddDialogOpen(false);
       setIsSecretKeyDialogOpen(true);
-      setFormData({ name: '', email: '', role: UserRole.USER, isActive: true });
+      setFormData({ name: '', email: '', role: UserRole.USER, isActive: true, jobTitle: '' });
       toast.success('Pengguna berhasil ditambahkan');
     } catch {
       toast.error('Gagal menambahkan pengguna');
@@ -154,6 +161,7 @@ export default function UsersPage() {
       email: formData.email,
       role: formData.role,
       isActive: formData.isActive,
+      jobTitle: formData.jobTitle,
     });
 
     addActivityLog({
@@ -220,6 +228,7 @@ export default function UsersPage() {
       email: user.email,
       role: user.role,
       isActive: user.isActive,
+      jobTitle: user.jobTitle || '',
     });
     setIsEditDialogOpen(true);
   };
@@ -275,6 +284,16 @@ export default function UsersPage() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="Contoh: john@amsat.com"
+                    className="focus-visible:ring-red-600"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="jobTitle">Jabatan</Label>
+                  <Input
+                    id="jobTitle"
+                    value={formData.jobTitle}
+                    onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
+                    placeholder="Contoh: Ketua AMSAT"
                     className="focus-visible:ring-red-600"
                   />
                 </div>
@@ -345,6 +364,7 @@ export default function UsersPage() {
                 <TableRow>
                   <TableHead className="w-[200px] font-semibold text-slate-700">Nama</TableHead>
                   <TableHead className="font-semibold text-slate-700">Email</TableHead>
+                  <TableHead className="font-semibold text-slate-700">Jabatan</TableHead>
                   <TableHead className="font-semibold text-slate-700">Role</TableHead>
                   <TableHead className="font-semibold text-slate-700">Status</TableHead>
                   <TableHead className="font-semibold text-slate-700">Tanggal Dibuat</TableHead>
@@ -360,6 +380,15 @@ export default function UsersPage() {
                       </div>
                     </TableCell>
                     <TableCell className="text-slate-500">{user.email}</TableCell>
+                    <TableCell className="text-slate-500">
+                      {user.jobTitle ? (
+                        <Link href="/" title="Ke Halaman Verifikasi Dokumen" className="text-red-600 hover:text-red-800 hover:underline">
+                          {user.jobTitle}
+                        </Link>
+                      ) : (
+                        <span className="text-slate-300">-</span>
+                      )}
+                    </TableCell>
                     <TableCell>{getRoleBadge(user.role)}</TableCell>
                     <TableCell>
                       {user.isActive ? (
@@ -463,6 +492,15 @@ export default function UsersPage() {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="focus-visible:ring-red-600"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-jobTitle">Jabatan</Label>
+                <Input
+                  id="edit-jobTitle"
+                  value={formData.jobTitle}
+                  onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
                   className="focus-visible:ring-red-600"
                 />
               </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDataStore } from '@/store/data-store';
 import { AdminLayout } from '@/components/admin/admin-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -38,7 +38,12 @@ import { id } from 'date-fns/locale';
 import { ActivityAction } from '@/types';
 
 export default function LogsPage() {
-  const { getActivityLogs } = useDataStore();
+  const { getActivityLogs, fetchLogs } = useDataStore();
+
+  // Fetch logs on mount
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [actionFilter, setActionFilter] = useState<string>('all');

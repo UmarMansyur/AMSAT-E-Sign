@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useDataStore } from '@/store/data-store';
 import { useAuthStore } from '@/store/auth-store';
 import { AdminLayout } from '@/components/admin/admin-layout';
@@ -25,7 +26,15 @@ import { cn } from '@/lib/utils';
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
-  const { getStats, getLetters, getActivityLogs } = useDataStore();
+  const { getStats, getLetters, getActivityLogs, fetchUsers, fetchLetters, fetchEvents, fetchLogs } = useDataStore();
+
+  // Fetch data on mount
+  useEffect(() => {
+    fetchUsers();
+    fetchLetters();
+    fetchEvents();
+    fetchLogs();
+  }, [fetchUsers, fetchLetters, fetchEvents, fetchLogs]);
 
   const stats = getStats();
   const recentLetters = getLetters().slice(0, 5);

@@ -13,6 +13,7 @@ export const mockUsers: User[] = [
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
     isActive: true,
+    jobTitle: 'Super Administrator',
   },
   {
     id: 'user-002',
@@ -23,6 +24,7 @@ export const mockUsers: User[] = [
     createdAt: new Date('2024-01-15'),
     updatedAt: new Date('2024-01-15'),
     isActive: true,
+    jobTitle: 'Staff Administrasi',
   },
   {
     id: 'user-003',
@@ -33,6 +35,7 @@ export const mockUsers: User[] = [
     createdAt: new Date('2024-02-01'),
     updatedAt: new Date('2024-02-01'),
     isActive: true,
+    jobTitle: 'Ketua AMSAT',
   },
   {
     id: 'user-004',
@@ -43,6 +46,7 @@ export const mockUsers: User[] = [
     createdAt: new Date('2024-02-15'),
     updatedAt: new Date('2024-02-15'),
     isActive: true,
+    jobTitle: 'Sekretaris Jenderal',
   },
   {
     id: 'user-005',
@@ -53,6 +57,7 @@ export const mockUsers: User[] = [
     createdAt: new Date('2024-03-01'),
     updatedAt: new Date('2024-03-01'),
     isActive: false,
+    jobTitle: 'Bendahara',
   },
 ];
 

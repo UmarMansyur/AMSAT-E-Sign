@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDataStore } from '@/store/data-store';
 import { useAuthStore } from '@/store/auth-store';
 import { AdminLayout } from '@/components/admin/admin-layout';
@@ -52,7 +52,12 @@ import Link from 'next/link';
 
 export default function EventsPage() {
   const { user: currentUser } = useAuthStore();
-  const { getEvents, addEvent, updateEvent, deleteEvent, addActivityLog } = useDataStore();
+  const { getEvents, addEvent, updateEvent, deleteEvent, addActivityLog, fetchEvents } = useDataStore();
+
+  // Fetch events on mount
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -79,14 +84,14 @@ export default function EventsPage() {
     event.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleAddEvent = () => {
+  const handleAddEvent = async () => {
     if (!formData.name) {
       toast.error('Nama kegiatan harus diisi');
       return;
     }
 
     try {
-      const newEvent = addEvent(formData, currentUser!.id);
+      const newEvent = await addEvent(formData, currentUser!.id);
 
       addActivityLog({
         userId: currentUser!.id,
@@ -115,11 +120,11 @@ export default function EventsPage() {
     }
   };
 
-  const handleEditEvent = () => {
+  const handleEditEvent = async () => {
     if (!selectedEvent) return;
 
     try {
-      updateEvent(selectedEvent.id, {
+      await updateEvent(selectedEvent.id, {
         name: formData.name,
         date: new Date(formData.date),
         claimDeadline: new Date(formData.claimDeadline),
@@ -150,11 +155,11 @@ export default function EventsPage() {
     }
   };
 
-  const handleDeleteEvent = () => {
+  const handleDeleteEvent = async () => {
     if (!selectedEvent) return;
 
     try {
-      deleteEvent(selectedEvent.id);
+      await deleteEvent(selectedEvent.id);
 
       addActivityLog({
         userId: currentUser!.id,

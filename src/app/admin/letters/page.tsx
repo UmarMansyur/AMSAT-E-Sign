@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDataStore } from '@/store/data-store';
 import { useAuthStore } from '@/store/auth-store';
 import { AdminLayout } from '@/components/admin/admin-layout';
@@ -64,8 +64,12 @@ import Link from 'next/link';
 
 export default function LettersPage() {
   const { user: currentUser } = useAuthStore();
-  const { getLetters, addLetter, updateLetter, deleteLetter, addActivityLog, generateQRCode } = useDataStore();
+  const { getLetters, addLetter, updateLetter, deleteLetter, addActivityLog, generateQRCode, fetchLetters } = useDataStore();
 
+  // Fetch letters on mount
+  useEffect(() => {
+    fetchLetters();
+  }, [fetchLetters]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -118,14 +122,14 @@ export default function LettersPage() {
     }
   };
 
-  const handleAddLetter = () => {
+  const handleAddLetter = async () => {
     if (!formData.letterNumber || !formData.letterDate || !formData.subject) {
       toast.error('Nomor surat, tanggal, dan hal harus diisi');
       return;
     }
 
     try {
-      const newLetter = addLetter({
+      const newLetter = await addLetter({
         letterNumber: formData.letterNumber,
         letterDate: new Date(formData.letterDate),
         subject: formData.subject,

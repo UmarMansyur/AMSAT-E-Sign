@@ -22,6 +22,7 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
   isActive: boolean;
+  jobTitle?: string;
 }
 
 // Interface untuk Surat/Letter
@@ -83,6 +84,7 @@ export interface CertificateClaim {
   eventId: string;
   userId?: string; // Opsional jika klaim publik
   recipientName: string;
+  callSign?: string;
   certificateNumber: string;
   qrCodeUrl: string;
   claimedAt: Date;
@@ -154,6 +156,7 @@ export interface UserFormData {
   password?: string;
   role: UserRole;
   isActive: boolean;
+  jobTitle?: string;
 }
 
 export interface LetterFormData {
