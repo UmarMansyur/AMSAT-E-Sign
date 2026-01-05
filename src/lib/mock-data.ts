@@ -1,0 +1,241 @@
+import { User, Letter, Signature, ActivityLog, UserRole, LetterStatus, ActivityAction } from '@/types';
+import { v4 as uuidv4 } from 'uuid';
+
+// Mock Users - Password untuk semua: "password123"
+// Secret Key untuk demo: "DEMO-SECRET-KEY"
+export const mockUsers: User[] = [
+  {
+    id: 'user-001',
+    name: 'Super Admin',
+    email: 'superadmin@esign.id',
+    role: UserRole.SUPER_ADMIN,
+    secretKeyHash: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4.S8X/X4.S8X/X4.', // Demo hash
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    isActive: true,
+  },
+  {
+    id: 'user-002',
+    name: 'Admin Dokumen',
+    email: 'admin@esign.id',
+    role: UserRole.ADMIN,
+    secretKeyHash: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4.S8X/X4.S8X/X4.',
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15'),
+    isActive: true,
+  },
+  {
+    id: 'user-003',
+    name: 'Budi Santoso',
+    email: 'budi@esign.id',
+    role: UserRole.USER,
+    secretKeyHash: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4.S8X/X4.S8X/X4.',
+    createdAt: new Date('2024-02-01'),
+    updatedAt: new Date('2024-02-01'),
+    isActive: true,
+  },
+  {
+    id: 'user-004',
+    name: 'Siti Rahayu',
+    email: 'siti@esign.id',
+    role: UserRole.USER,
+    secretKeyHash: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4.S8X/X4.S8X/X4.',
+    createdAt: new Date('2024-02-15'),
+    updatedAt: new Date('2024-02-15'),
+    isActive: true,
+  },
+  {
+    id: 'user-005',
+    name: 'Ahmad Wijaya',
+    email: 'ahmad@esign.id',
+    role: UserRole.USER,
+    secretKeyHash: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4.S8X/X4.S8X/X4.',
+    createdAt: new Date('2024-03-01'),
+    updatedAt: new Date('2024-03-01'),
+    isActive: false,
+  },
+];
+
+// Mock Letters - QR Code will be generated dynamically
+export const mockLetters: Letter[] = [
+  {
+    id: 'letter-001',
+    letterNumber: '001/SK/I/2024',
+    letterDate: new Date('2024-01-10'),
+    subject: 'Surat Keterangan Kerja',
+    attachment: '1 (satu) berkas',
+    content: 'Yang bertanda tangan di bawah ini menerangkan bahwa...',
+    status: LetterStatus.SIGNED,
+    contentHash: 'a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef12345678',
+    qrCodeUrl: undefined, // Will be generated on-demand
+    createdById: 'user-002',
+    createdAt: new Date('2024-01-10'),
+    updatedAt: new Date('2024-01-10'),
+  },
+  {
+    id: 'letter-002',
+    letterNumber: '002/SPT/I/2024',
+    letterDate: new Date('2024-01-15'),
+    subject: 'Surat Perintah Tugas',
+    attachment: '2 (dua) berkas',
+    content: 'Dengan ini diperintahkan kepada...',
+    status: LetterStatus.SIGNED,
+    contentHash: 'b2c3d4e5f67890123456789012345678901234567890abcdef1234567890abcdef',
+    qrCodeUrl: undefined, // Will be generated on-demand
+    createdById: 'user-002',
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15'),
+  },
+  {
+    id: 'letter-003',
+    letterNumber: '003/UNDANGAN/II/2024',
+    letterDate: new Date('2024-02-01'),
+    subject: 'Undangan Rapat Koordinasi',
+    attachment: '-',
+    content: 'Dengan hormat, mengundang Bapak/Ibu untuk hadir...',
+    status: LetterStatus.DRAFT,
+    createdById: 'user-003',
+    createdAt: new Date('2024-02-01'),
+    updatedAt: new Date('2024-02-01'),
+  },
+  {
+    id: 'letter-004',
+    letterNumber: '004/PENGUMUMAN/II/2024',
+    letterDate: new Date('2024-02-10'),
+    subject: 'Pengumuman Cuti Bersama',
+    attachment: '1 (satu) lampiran',
+    status: LetterStatus.DRAFT,
+    createdById: 'user-002',
+    createdAt: new Date('2024-02-10'),
+    updatedAt: new Date('2024-02-10'),
+  },
+  {
+    id: 'letter-005',
+    letterNumber: '005/KETERANGAN/III/2024',
+    letterDate: new Date('2024-03-01'),
+    subject: 'Surat Keterangan Domisili',
+    attachment: '-',
+    content: 'Menerangkan dengan sebenarnya bahwa...',
+    status: LetterStatus.INVALID,
+    contentHash: 'c3d4e5f678901234567890123456789012345678901234567890abcdef1234567890',
+    createdById: 'user-003',
+    createdAt: new Date('2024-03-01'),
+    updatedAt: new Date('2024-03-05'),
+  },
+];
+
+// Mock Signatures
+export const mockSignatures: Signature[] = [
+  {
+    id: 'sig-001',
+    letterId: 'letter-001',
+    signerId: 'user-003',
+    signerName: 'Budi Santoso',
+    signedAt: new Date('2024-01-10T10:30:00'),
+    contentHash: 'a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef12345678',
+    metadata: {
+      ipAddress: '192.168.1.100',
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      timestamp: new Date('2024-01-10T10:30:00'),
+    },
+  },
+  {
+    id: 'sig-002',
+    letterId: 'letter-002',
+    signerId: 'user-004',
+    signerName: 'Siti Rahayu',
+    signedAt: new Date('2024-01-15T14:45:00'),
+    contentHash: 'b2c3d4e5f67890123456789012345678901234567890abcdef1234567890abcdef',
+    metadata: {
+      ipAddress: '192.168.1.101',
+      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+      timestamp: new Date('2024-01-15T14:45:00'),
+    },
+  },
+];
+
+// Mock Activity Logs
+export const mockActivityLogs: ActivityLog[] = [
+  {
+    id: uuidv4(),
+    userId: 'user-001',
+    userName: 'Super Admin',
+    action: ActivityAction.LOGIN,
+    description: 'Berhasil login ke sistem',
+    ipAddress: '192.168.1.1',
+    createdAt: new Date('2024-03-05T08:00:00'),
+  },
+  {
+    id: uuidv4(),
+    userId: 'user-002',
+    userName: 'Admin Dokumen',
+    action: ActivityAction.CREATE_LETTER,
+    description: 'Membuat surat baru: 004/PENGUMUMAN/II/2024',
+    metadata: { letterId: 'letter-004', letterNumber: '004/PENGUMUMAN/II/2024' },
+    ipAddress: '192.168.1.10',
+    createdAt: new Date('2024-02-10T09:15:00'),
+  },
+  {
+    id: uuidv4(),
+    userId: 'user-003',
+    userName: 'Budi Santoso',
+    action: ActivityAction.SIGN_LETTER,
+    description: 'Menandatangani surat: 001/SK/I/2024',
+    metadata: { letterId: 'letter-001', letterNumber: '001/SK/I/2024' },
+    ipAddress: '192.168.1.100',
+    createdAt: new Date('2024-01-10T10:30:00'),
+  },
+  {
+    id: uuidv4(),
+    userId: 'user-004',
+    userName: 'Siti Rahayu',
+    action: ActivityAction.SIGN_LETTER,
+    description: 'Menandatangani surat: 002/SPT/I/2024',
+    metadata: { letterId: 'letter-002', letterNumber: '002/SPT/I/2024' },
+    ipAddress: '192.168.1.101',
+    createdAt: new Date('2024-01-15T14:45:00'),
+  },
+  {
+    id: uuidv4(),
+    userId: 'user-001',
+    userName: 'Super Admin',
+    action: ActivityAction.CREATE_USER,
+    description: 'Membuat pengguna baru: Ahmad Wijaya',
+    metadata: { createdUserId: 'user-005', email: 'ahmad@esign.id' },
+    ipAddress: '192.168.1.1',
+    createdAt: new Date('2024-03-01T11:00:00'),
+  },
+  {
+    id: uuidv4(),
+    userId: 'user-001',
+    userName: 'Super Admin',
+    action: ActivityAction.RESET_SECRET_KEY,
+    description: 'Reset secret key untuk pengguna: Budi Santoso',
+    metadata: { targetUserId: 'user-003' },
+    ipAddress: '192.168.1.1',
+    createdAt: new Date('2024-03-03T16:20:00'),
+  },
+  {
+    id: uuidv4(),
+    userId: 'user-005',
+    userName: 'Ahmad Wijaya',
+    action: ActivityAction.FAILED_SECRET_KEY_ATTEMPT,
+    description: 'Gagal memverifikasi secret key (percobaan ke-3)',
+    metadata: { attemptCount: 3 },
+    ipAddress: '192.168.1.150',
+    createdAt: new Date('2024-03-04T09:30:00'),
+  },
+  {
+    id: uuidv4(),
+    userId: 'user-002',
+    userName: 'Admin Dokumen',
+    action: ActivityAction.UPDATE_LETTER,
+    description: 'Memperbarui surat: 005/KETERANGAN/III/2024 (status: tidak valid)',
+    metadata: { letterId: 'letter-005', newStatus: LetterStatus.INVALID },
+    ipAddress: '192.168.1.10',
+    createdAt: new Date('2024-03-05T10:00:00'),
+  },
+];
+
+export const mockEvents: any[] = [];
+export const mockCertificateClaims: any[] = [];
