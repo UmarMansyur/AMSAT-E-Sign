@@ -31,7 +31,6 @@ import {
   Key,
   AlertCircle,
   Shield,
-  Input as InputIcon,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { format } from 'date-fns';
@@ -94,6 +93,22 @@ export default function LogsPage() {
       [ActivityAction.RESET_SECRET_KEY]: { label: 'Reset Key', className: 'bg-amber-50 text-amber-700 border-amber-200 border' },
       [ActivityAction.GENERATE_SECRET_KEY]: { label: 'Generate Key', className: 'bg-amber-50 text-amber-700 border-amber-200 border' },
       [ActivityAction.FAILED_SECRET_KEY_ATTEMPT]: { label: 'Gagal Verifikasi', className: 'bg-red-50 text-red-700 border-red-200 border' },
+      [ActivityAction.CREATE_EVENT]: {
+        label: '',
+        className: ''
+      },
+      [ActivityAction.UPDATE_EVENT]: {
+        label: '',
+        className: ''
+      },
+      [ActivityAction.DELETE_EVENT]: {
+        label: '',
+        className: ''
+      },
+      [ActivityAction.CLAIM_CERTIFICATE]: {
+        label: '',
+        className: ''
+      }
     };
 
     const config = configs[action] || { label: action, className: 'bg-slate-50 text-slate-700 border-slate-200 border' };
